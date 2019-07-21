@@ -1,0 +1,54 @@
+{
+  "name": "JupyterDesktop",
+  "description": "Run Jupyter Lab as a native app",
+  "version": "0.0.1",
+  "main": "app/index.js",
+  "repository": "dfm/JupyterDesktop",
+  "author": "Dan Foreman-Mackey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dfm/JupyterDesktop/issues"
+  },
+  "homepage": "https://github.com/dfm/JupyterDesktop",
+  "scripts": {
+    "start": "electron ./app",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "io.dfm.JupyterDesktop",
+    "productName": "JupyterDesktop",
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ],
+    "fileAssociations": {
+      "ext": "ipynb",
+      "name": "ipynb"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "files": [
+      "app/*.js"
+    ]
+  },
+  "dependencies": {
+    "electron-settings": "^3.2.0"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  }
+}
