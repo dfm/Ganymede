@@ -14,6 +14,21 @@ If you feel the urge to report or fix bugs, please do!
 This project is meant to sit somewhere between [running Jupyter in Chrome's app mode](http://christopherroach.com/articles/jupyterlab-desktop-app/) and fully featured apps like [Jupyterlab app](https://github.com/jupyterlab/jupyterlab_app) and [nteract](https://nteract.io/).
 The idea is that I want it to be lightweight (it shouldn't really add features to Jupyter Lab), but have the convenience features that I want.
 
+## Usage
+
+I've never worked with Electron or Node before this so feel free to correct these steps if you have more experience!
+The code has been developed and tested on macOS and it should probably work on at least some flavors of Linux, but it'll probably need some work if you want to run it on Windows.
+
+You'll need to install the [Yarn package manager](https://yarnpkg.com/en/) then:
+
+1. Clone the repository: `git clone https://github.com/dfm/Ganymede.git; cd Ganymede`
+2. Install the dependencies: `yarn`
+3. Start the dev version of the app: `yarn start`
+4. Build the production version of the app: `yarn dist`
+5. Launch the app from the `dist` directory
+
+If you're on a Mac, you should be able to open `.ipynb` files in Ganymede by double clicking (or right-clicking and using "Open with").
+
 ## License
 
 Copyright 2019 Dan Foreman-Mackey
