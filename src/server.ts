@@ -1,6 +1,6 @@
 import { homedir } from "os";
 import { dialog } from "electron";
-import { exec, ExecOptions } from "child_process";
+import { exec } from "child_process";
 import { existsSync, readFileSync } from "fs";
 import * as settings from "electron-settings";
 
@@ -74,7 +74,7 @@ export class JupyterServer {
     }
   }
 
-  start (workspace) {
+  start (workspace, directory=null) {
     this.stop();
 
     if (this.executable == null) {
@@ -99,7 +99,10 @@ export class JupyterServer {
     }
 
     // Launch the process
-    let directory: string = this.askForDirectory(workspace.window);
+    if (directory == null) {
+      directory = this.askForDirectory(workspace.window);
+    }
+    // let directory: string = this.askForDirectory(workspace.window);
     let options = {stdio: "inherit", cwd: directory};
     this.proc = exec(
       this.executable + ' --no-browser -y', options,

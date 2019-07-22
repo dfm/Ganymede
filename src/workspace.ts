@@ -1,4 +1,3 @@
-import { homedir } from "os";
 import { BrowserWindow } from "electron"
 import { JupyterServer } from "./server"
 
@@ -7,7 +6,7 @@ export class Workspace {
   window = null;
   server = null;
 
-  start () {
+  start (directory=null) {
     let self = this;
 
     this.window = new BrowserWindow({
@@ -28,7 +27,7 @@ export class Workspace {
       this.server = null;
     }
     this.server = new JupyterServer();
-    this.server.start(this);
+    this.server.start(this, directory);
   }
 
   stop () {
