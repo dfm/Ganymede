@@ -2,7 +2,7 @@ import { Menu } from "electron";
 // const { launchNotebook } = require('./notebook')
 const isMac = process.platform === "darwin";
 
-export function setupMenu (startNewWorkspace) {
+export function setupMenu (manager) {
   let template: any[] = [
     { role: 'appMenu' },
     { role: 'editMenu' },
@@ -13,11 +13,13 @@ export function setupMenu (startNewWorkspace) {
     label: 'File',
     submenu: [
       {label: 'New Workspace', accelerator: "CmdOrCtrl+N", click: function () {
-        startNewWorkspace();
+        manager.startNewWorkspace();
       }},
-      isMac ? { role: 'close' } : {role: 'quit'},
+      {label: 'Set jupyter-lab Executable', click: function () {
+        manager.changeJupyterExecutable();
+      }},
       { type: 'separator' },
-      // { label: 'Set jupyter-lab executable', click: () => {launchNotebook(true)} },
+      isMac ? { role: 'close' } : {role: 'quit'}
     ]
   })
 

@@ -5,9 +5,10 @@ export class Workspace {
 
   window = null;
   server = null;
+  directory = null;
   url = null;
 
-  start (directory=null, path=null) {
+  start (app, directory=null, path=null) {
     let self = this;
 
     this.window = new BrowserWindow({
@@ -19,14 +20,13 @@ export class Workspace {
       }
     });
 
-    // Emitted when the window is closed.
     this.window.on("close", function () {
       self.stop();
     });
 
     this.window.on("page-title-updated", function (event) {
       event.preventDefault();
-    })
+    });
 
     if (this.server != null) {
       this.server.stop();

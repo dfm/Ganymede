@@ -3,7 +3,6 @@ import { dialog } from "electron";
 import { exec } from "child_process";
 import { URL } from "url";
 import { existsSync, readFileSync } from "fs";
-import * as log from "electron-log";
 import * as settings from "electron-settings";
 
 const urlRegExp = /(http:\/\/localhost:[0-9]+\/\?token=[a-f0-9]+)/;
@@ -16,6 +15,7 @@ export class JupyterServer {
   executable = null;
   proc = null;
   log: string;
+  directory = null;
 
   askForDirectory (window=null) {
     let directories = dialog.showOpenDialog(window, {
@@ -111,7 +111,8 @@ export class JupyterServer {
     if (directory == null) {
       directory = this.askForDirectory(workspace.window);
     }
-    // let directory: string = this.askForDirectory(workspace.window);
+    this.directory = directory;
+
     let options = {stdio: "inherit", cwd: directory};
     this.proc = exec(
       this.executable + ' --no-browser -y', options,
@@ -149,7 +150,6 @@ export class JupyterServer {
   }
 
   stop () {
-    console.log("server stop")
     if (this.proc != null) {
       this.proc.kill();
       this.proc = null;
