@@ -1,15 +1,15 @@
 {
-  "name": "JupyterDesktop",
+  "name": "Ganymede",
   "description": "Run Jupyter Lab as a native app",
   "version": "0.0.1",
   "main": "app/index.js",
-  "repository": "dfm/JupyterDesktop",
+  "repository": "dfm/Ganymede",
   "author": "Dan Foreman-Mackey",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dfm/JupyterDesktop/issues"
+    "url": "https://github.com/dfm/Ganymede/issues"
   },
-  "homepage": "https://github.com/dfm/JupyterDesktop",
+  "homepage": "https://github.com/dfm/Ganymede",
   "scripts": {
     "build": "tsc",
     "start": "yarn build && electron ./app",
@@ -17,8 +17,8 @@
     "dist": "yarn build && electron-builder"
   },
   "build": {
-    "appId": "io.dfm.JupyterDesktop",
-    "productName": "JupyterDesktop",
+    "appId": "io.dfm.Ganymede",
+    "productName": "Ganymede",
     "publish": [
       {
         "provider": "github"

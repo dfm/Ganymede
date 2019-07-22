@@ -45,7 +45,8 @@ export class JupyterServer {
     if (existsSync(environFilename)) {
       let fileContents = readFileSync(environFilename, {encoding: 'utf8'});
       let lines = fileContents.split(/[\r\n]+/);
-      paths = lines.filter(function (element, index, array) {
+      paths = lines.map(function (value) { return value + "/bin/jupyter-lab"; });
+      paths = paths.filter(function (element, index, array) {
         let path = element + "/bin/jupyter-lab";
         return existsSync(path);
       })
@@ -77,6 +78,8 @@ export class JupyterServer {
   }
 
   start (workspace, directory=null, path=null) {
+    let self = this;
+
     this.stop();
 
     if (this.executable == null) {
@@ -85,15 +88,15 @@ export class JupyterServer {
 
     // Helper to display error dialogs
     function showError (error) {
-      this.proc = null;
+      self.proc = null;
       dialog.showMessageBox({
         type: 'error', buttons: ['Reload', 'Close'],
         title: "Jupyter Lab crashed",
         message: 'Jupyter Lab crashed with the error:\n' + error
       }, function (response) {
         if (response == 0) {
-          this.findExecutable(true);
-          this.launch(workspace);
+          self.findExecutable(true, true, workspace.window);
+          self.start(workspace, directory, path);
         } else {
           workspace.close();
         }
@@ -120,6 +123,7 @@ export class JupyterServer {
 
     // Search for the URL in stderr
     let url = null;
+    this.log = "";
     this.proc.stderr.on("data", function (data) {
       if (url === null) {
         let results = urlRegExp.exec(data);
@@ -130,12 +134,12 @@ export class JupyterServer {
             url.pathname += "lab/tree/" + path;
             url = url.toString();
           }
-          workspace.window.loadURL(url);
+          workspace.loadURL(url);
+          workspace.window.setTitle("Ganymede: " + directory);
         }
       }
-      if (workspace != null && workspace.log != null && workspace.log.webContents != null) {
-        workspace.log.webContents.send("action-update-log", {message: data});
-      }
+      this.log += data;
+      // workspace.window.webContents.send("action-update-log", {message: data});
     });
 
   }

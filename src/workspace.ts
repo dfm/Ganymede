@@ -5,26 +5,17 @@ export class Workspace {
 
   window = null;
   server = null;
-  log = null;
+  url = null;
 
   start (directory=null, path=null) {
     let self = this;
 
-    this.log = new BrowserWindow({
-      width: 800,
-      height: 600,
-      // show: false,
-      webPreferences: {
-        nodeIntegration: true
-      }
-    });
-    this.log.loadFile("pages/log.html");
-
     this.window = new BrowserWindow({
       width: 800,
       height: 600,
+      title: "Ganymede",
       webPreferences: {
-        nodeIntegration: false
+        nodeIntegration: true
       }
     });
 
@@ -33,10 +24,9 @@ export class Workspace {
       self.stop();
     });
 
-    this.log.on("close", function (event) {
-      self.log.hide();
+    this.window.on("page-title-updated", function (event) {
       event.preventDefault();
-    });
+    })
 
     if (this.server != null) {
       this.server.stop();
@@ -51,13 +41,15 @@ export class Workspace {
       this.server.stop();
       this.server = null;
     }
-    if (this.log != null) {
-      this.log = null;
-    }
     if (this.window != null) {
       this.window.destroy();
       this.window = null;
     }
+  }
+
+  loadURL (url) {
+    this.window.loadURL(url);
+    this.url = url;
   }
 
 }
