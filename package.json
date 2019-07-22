@@ -11,9 +11,10 @@
   },
   "homepage": "https://github.com/dfm/JupyterDesktop",
   "scripts": {
-    "start": "electron ./app",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "build": "tsc",
+    "start": "yarn build && electron ./app",
+    "pack": "yarn build && electron-builder --dir",
+    "dist": "yarn build && electron-builder"
   },
   "build": {
     "appId": "io.dfm.JupyterDesktop",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "electron": "latest",
-    "electron-builder": "latest"
+    "electron-builder": "latest",
+    "typescript": "^3.5.3"
   }
 }
