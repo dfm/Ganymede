@@ -46,6 +46,7 @@
     ]
   },
   "dependencies": {
+    "electron-log": "^3.0.6",
     "electron-settings": "^3.2.0"
   },
   "devDependencies": {

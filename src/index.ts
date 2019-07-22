@@ -44,6 +44,6 @@ app.on("activate", function () {
 
 app.on("quit", function () {
   workspaces.forEach(function (workspace) {
-    workspace.stop();
+    // workspace.stop();
   });
 });

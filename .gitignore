@@ -2,4 +2,5 @@ dist
 *.tgz
 node_modules
 .DS_Store
-app
+app/*
+!app/pages

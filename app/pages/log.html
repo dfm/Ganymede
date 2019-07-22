@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Log</title>
+</head>
+<body>
+
+<pre id="log"></pre>
+
+<script>
+    const { ipcRenderer } = require('electron');
+
+    ipcRenderer.on('action-update-log', (event, arg) => {
+        let log = document.getElementById("log");
+        log.innerHTML += arg.message;
+    });
+</script>
+
+</body>
+</html>

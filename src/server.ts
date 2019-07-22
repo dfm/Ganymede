@@ -3,6 +3,7 @@ import { dialog } from "electron";
 import { exec } from "child_process";
 import { URL } from "url";
 import { existsSync, readFileSync } from "fs";
+import * as log from "electron-log";
 import * as settings from "electron-settings";
 
 const urlRegExp = /(http:\/\/localhost:[0-9]+\/\?token=[a-f0-9]+)/;
@@ -119,7 +120,6 @@ export class JupyterServer {
 
     // Search for the URL in stderr
     let url = null;
-    this.log = "";
     this.proc.stderr.on("data", function (data) {
       if (url === null) {
         let results = urlRegExp.exec(data);
@@ -133,12 +133,15 @@ export class JupyterServer {
           workspace.window.loadURL(url);
         }
       }
-      this.log += data;
+      if (workspace != null && workspace.log != null && workspace.log.webContents != null) {
+        workspace.log.webContents.send("action-update-log", {message: data});
+      }
     });
 
   }
 
   stop () {
+    console.log("server stop")
     if (this.proc != null) {
       this.proc.kill();
       this.proc = null;
