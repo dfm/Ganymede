@@ -15,6 +15,15 @@ export class JupyterServer {
   proc = null;
   log: string;
 
+  askForDirectory (window=null) {
+    let directories = dialog.showOpenDialog(window, {
+      message: "Select the root directory of your project",
+      defaultPath: homeDirPath,
+      properties: ["openDirectory"]
+    });
+    return directories[0];
+  }
+
   getSavedExecutable () {
     return settings.get("jupyterlabpath");
   }
@@ -24,7 +33,7 @@ export class JupyterServer {
       message: "Select a 'jupyter-lab' executable",
       defaultPath: homeDirPath,
       properties: ["openFile"]
-    })
+    });
   }
 
   getCondaJupyterLabPaths () {
@@ -90,7 +99,8 @@ export class JupyterServer {
     }
 
     // Launch the process
-    let options = {stdio: "inherit", cwd: homeDirPath};
+    let directory: string = this.askForDirectory(workspace.window);
+    let options = {stdio: "inherit", cwd: directory};
     this.proc = exec(
       this.executable + ' --no-browser -y', options,
       function (error, stdout, stderr) {

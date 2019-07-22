@@ -1,3 +1,4 @@
+import { homedir } from "os";
 import { BrowserWindow } from "electron"
 import { JupyterServer } from "./server"
 
@@ -13,7 +14,7 @@ export class Workspace {
       width: 800,
       height: 600,
       webPreferences: {
-        nodeIntegration: true
+        nodeIntegration: false
       }
     });
 
