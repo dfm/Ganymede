@@ -1,6 +1,7 @@
 import { homedir } from "os";
 import { dialog } from "electron";
 import { exec } from "child_process";
+import { URL } from "url";
 import { existsSync, readFileSync } from "fs";
 import * as settings from "electron-settings";
 
@@ -74,7 +75,7 @@ export class JupyterServer {
     }
   }
 
-  start (workspace, directory=null) {
+  start (workspace, directory=null, path=null) {
     this.stop();
 
     if (this.executable == null) {
@@ -124,6 +125,11 @@ export class JupyterServer {
         let results = urlRegExp.exec(data);
         if (results !== null) {
           url = results[0];
+          if (path != null) {
+            url = new URL(url);
+            url.pathname += "lab/tree/" + path;
+            url = url.toString();
+          }
           workspace.window.loadURL(url);
         }
       }

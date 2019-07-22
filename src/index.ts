@@ -1,28 +1,31 @@
 import { app } from "electron";
-import { dirname } from "path";
-import { existsSync } from "fs";
+import { dirname, basename } from "path";
 import { Workspace } from "./workspace";
 import { setupMenu } from "./menu";
 
 let workspaces = [];
 let loadDirectory = null;
+let loadPath = null;
 
-function startNewWorkspace (directory=null) {
+function startNewWorkspace (directory=null, path=null) {
   let workspace = new Workspace();
-  workspace.start(directory);
+  workspace.start(directory, path);
   workspaces.push(workspace);
 }
 
 app.on("ready", function () {
   setupMenu(startNewWorkspace);
-  startNewWorkspace(loadDirectory);
+  startNewWorkspace(loadDirectory, loadPath);
+  loadDirectory = null;
+  loadPath = null;
 });
 
 app.on("open-file", function (event, path) {
   if (app.isReady()) {
-    startNewWorkspace(dirname(path));
+    startNewWorkspace(dirname(path), basename(path));
   } else {
     loadDirectory = dirname(path);
+    loadPath = basename(path);
   }
 })
 

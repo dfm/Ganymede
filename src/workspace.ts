@@ -6,7 +6,7 @@ export class Workspace {
   window = null;
   server = null;
 
-  start (directory=null) {
+  start (directory=null, path=null) {
     let self = this;
 
     this.window = new BrowserWindow({
@@ -27,7 +27,7 @@ export class Workspace {
       this.server = null;
     }
     this.server = new JupyterServer();
-    this.server.start(this, directory);
+    this.server.start(this, directory, path);
   }
 
   stop () {
