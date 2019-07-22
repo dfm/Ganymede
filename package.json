@@ -46,12 +46,11 @@
     ]
   },
   "dependencies": {
-    "electron-log": "^3.0.6",
     "electron-settings": "^3.2.0"
   },
   "devDependencies": {
-    "electron": "latest",
-    "electron-builder": "latest",
+    "electron": "^5.0.7",
+    "electron-builder": "^21.1.1",
     "typescript": "^3.5.3"
   }
 }

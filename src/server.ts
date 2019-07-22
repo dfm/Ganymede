@@ -23,7 +23,10 @@ export class JupyterServer {
       defaultPath: homeDirPath,
       properties: ["openDirectory"]
     });
-    return directories[0];
+    if (directories != null && directories.length > 0) {
+      return directories[0];
+    }
+    return homeDirPath;
   }
 
   getSavedExecutable () {
@@ -31,11 +34,15 @@ export class JupyterServer {
   }
 
   askForExecutable (window=null) {
-    return dialog.showOpenDialog(window, {
+    let paths = dialog.showOpenDialog(window, {
       message: "Select a 'jupyter-lab' executable",
       defaultPath: homeDirPath,
       properties: ["openFile"]
     });
+    if (paths != null && paths.length > 0) {
+      return paths[0];
+    }
+    return homeDirPath;
   }
 
   getCondaJupyterLabPaths () {
@@ -46,24 +53,21 @@ export class JupyterServer {
       let fileContents = readFileSync(environFilename, {encoding: 'utf8'});
       let lines = fileContents.split(/[\r\n]+/);
       paths = lines.map(function (value) { return value + "/bin/jupyter-lab"; });
-      paths = paths.filter(function (element, index, array) {
-        let path = element + "/bin/jupyter-lab";
-        return existsSync(path);
-      })
+      paths = paths.filter(function (element) { return existsSync(element); });
     }
 
     return paths;
   }
 
   findExecutable (ask=false, save=true, window=null) {
-    let path;
+    let path: string;
     if (ask) {
       path = this.askForExecutable(window);
     } else {
       path = this.getSavedExecutable();
       if (path == null) {
         let paths = this.getCondaJupyterLabPaths();
-        if (paths.length) {
+        if (paths.length > 0) {
           path = paths[0];
         }
       }

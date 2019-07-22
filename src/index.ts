@@ -18,6 +18,7 @@ app.on("ready", function () {
   startNewWorkspace(loadDirectory, loadPath);
   loadDirectory = null;
   loadPath = null;
+  console.log(process.path)
 });
 
 app.on("open-file", function (event, path) {
@@ -42,8 +43,8 @@ app.on("activate", function () {
   }
 });
 
-app.on("quit", function () {
-  workspaces.forEach(function (workspace) {
-    // workspace.stop();
-  });
-});
+// app.on("quit", function () {
+//   workspaces.forEach(function (workspace) {
+//     // workspace.stop();
+//   });
+// });
