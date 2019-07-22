@@ -42,7 +42,7 @@ export class JupyterServer {
     if (paths != null && paths.length > 0) {
       return paths[0];
     }
-    return homeDirPath;
+    return null;
   }
 
   getCondaJupyterLabPaths () {
@@ -96,13 +96,13 @@ export class JupyterServer {
       dialog.showMessageBox({
         type: 'error', buttons: ['Reload', 'Close'],
         title: "Jupyter Lab crashed",
-        message: 'Jupyter Lab crashed with the error:\n' + error
+        message: 'Jupyter Lab crashed with the error (' + directory + ', ' + path + '):\n' + error
       }, function (response) {
         if (response == 0) {
           self.findExecutable(true, true, workspace.window);
           self.start(workspace, directory, path);
         } else {
-          workspace.close();
+          workspace.stop();
         }
       });
     }

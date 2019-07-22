@@ -8,7 +8,7 @@ export class Workspace {
   directory = null;
   url = null;
 
-  start (app, directory=null, path=null) {
+  start (directory=null, path=null) {
     let self = this;
 
     this.window = new BrowserWindow({
