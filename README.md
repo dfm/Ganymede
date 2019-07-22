@@ -1,1 +1,1 @@
-# JupyterDesktop
+# Ganymede
