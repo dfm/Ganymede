@@ -19,7 +19,9 @@ The idea is that I want it to be lightweight (it shouldn't really add features t
 I've never worked with Electron or Node before this so feel free to correct these steps if you have more experience!
 The code has been developed and tested on macOS and it should probably work on at least some flavors of Linux, but it'll probably need some work if you want to run it on Windows.
 
-You'll need to install the [Yarn package manager](https://yarnpkg.com/en/) then:
+**Mac binary:** Mac builds are available under [Releases](https://github.com/dfm/Ganymede/releases), but I don't have a Mac developer key so it'll show some warnings. If you trust me, you can right-click and select "Open" to bypass the warnings.
+
+**Development version:** You'll need to install the [Yarn package manager](https://yarnpkg.com/en/) then:
 
 1. Clone the repository: `git clone https://github.com/dfm/Ganymede.git; cd Ganymede`
 2. Install the dependencies: `yarn`
