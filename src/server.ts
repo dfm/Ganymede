@@ -113,13 +113,7 @@ export class JupyterServer {
     }
     this.directory = directory;
 
-    let current_path = process.env.PATH;
-    if (settings.has("path")) {
-      current_path = settings.get("path");
-    }
-    process.env.PATH = current_path;
-
-    let options = {stdio: "inherit", cwd: directory, env: process.env};
+    let options = {stdio: "inherit", cwd: directory};
     this.proc = exec(
       this.executable + ' --no-browser -y', options,
       function (error, stdout, stderr) {
