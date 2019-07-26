@@ -1,5 +1,6 @@
 import { Menu } from "electron";
-// const { launchNotebook } = require('./notebook')
+import { installCLI } from "./cli";
+
 const isMac = process.platform === "darwin";
 
 export function setupMenu (manager) {
@@ -15,8 +16,14 @@ export function setupMenu (manager) {
       {label: 'New Workspace', accelerator: "CmdOrCtrl+N", click: function () {
         manager.startNewWorkspace();
       }},
+      {label: 'Restart Server', click: function () {
+        manager.restartActiveServer();
+      }},
       {label: 'Set jupyter-lab Executable', click: function () {
         manager.changeJupyterExecutable();
+      }},
+      {label: 'Install CLI', click: function () {
+        installCLI();
       }},
       { type: 'separator' },
       isMac ? { role: 'close' } : {role: 'quit'}

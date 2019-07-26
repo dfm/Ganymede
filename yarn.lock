@@ -511,6 +511,13 @@ dmg-builder@21.1.1:
     parse-color "^1.0.0"
     sanitize-filename "^1.6.1"
 
+doc-ready@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/doc-ready/-/doc-ready-1.0.4.tgz#37f5391969cff994303fdfef2e5d50357f8164d3"
+  integrity sha1-N/U5GWnP+ZQwP9/vLl1QNX+BZNM=
+  dependencies:
+    eventie "^1"
+
 dot-prop@^4.1.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
@@ -579,6 +586,13 @@ electron-download@^4.1.0:
     rc "^1.2.1"
     semver "^5.4.1"
     sumchecker "^2.0.2"
+
+electron-prompt@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/electron-prompt/-/electron-prompt-1.3.1.tgz#547dfa6daa68264249c689f0086fdfad6c9bf52b"
+  integrity sha512-bCbDb9c9knx23PG6MfzBdYuffDZlZQ9gZhjTuUVCAwdCZv9hj/7IEguvBrP4DVDTouv+pYQ0LqCh5VuwYDktpg==
+  dependencies:
+    doc-ready "^1.0.4"
 
 electron-publish@21.1.1:
   version "21.1.1"
@@ -656,6 +670,11 @@ esprima@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.1.tgz#13b04cdb3e6c5d19df91ab6987a8695619b0aa71"
   integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
+
+eventie@^1:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/eventie/-/eventie-1.0.6.tgz#d4ffc8b0c2b5e493c2aa1b22cbe918d3aee74437"
+  integrity sha1-1P/IsMK15JPCqhsiy+kY067nRDc=
 
 execa@^0.7.0:
   version "0.7.0"

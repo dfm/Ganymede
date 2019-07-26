@@ -26,12 +26,27 @@ export class WorkspaceManager {
 
     let server = this.activeWorkspace.server;
     if (server != null) {
-      this.activeWorkspace.server.stop();
+      server.stop();
     } else {
       server = this.activeWorkspace.server = new JupyterServer();
     }
 
     server.findExecutable(true, false, this.activeWorkspace.window);
+    server.start(this.activeWorkspace, server.directory);
+  }
+
+  restartActiveServer () {
+    if (this.activeWorkspace == null) {
+      return;
+    }
+
+    let server = this.activeWorkspace.server;
+    if (server != null) {
+      server.stop();
+    } else {
+      server = this.activeWorkspace.server = new JupyterServer();
+    }
+
     server.start(this.activeWorkspace, server.directory);
   }
 
