@@ -31,33 +31,40 @@ export class CondaLocator extends Locator {
 
   isWindows: boolean = process.platform === "win32";
 
-  locateCondaExecutables () {
+  async locateCondaExecutables () {
     let globs = condaGlobPathsForLinuxMac;
     if (this.isWindows) {
       globs = condaGlobPathsForWindows;
     }
-    let paths = [].concat.apply([], globs.map(function (g) {
-      return glob.sync(g);
-    }));
+    let paths: string[] = [];
+    for (const g of globs) {
+      const newPaths = await new Promise<string[]>((resolve, reject) => {
+        glob(g, (err, matches: string[]) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(matches);
+          }
+        });
+      });
+      paths.push(...newPaths);
+    }
     return paths;
   }
 
-  locatePythonExecutables () {
-    let condaExecs = this.locateCondaExecutables();
-    return condaExecs.map(function (fn: string) {
-      return path.resolve(path.dirname(fn), "python");
-    }).filter(function (fn: string) {
-      return existsSync(fn);
-    });
-  }
-
-  locateJupyterLabExecutables () {
-    let condaExecs = this.locateCondaExecutables();
-    return condaExecs.map(function (fn: string) {
-      return path.resolve(path.dirname(fn), "jupyter-lab");
-    }).filter(function (fn: string) {
-      return existsSync(fn);
-    });
+  async locateJupyterLabExecutables () {
+    const condaExecs = await this.locateCondaExecutables();
+    let results = [];
+    for (const fn of condaExecs) {
+      const jupyterLabPath = path.resolve(path.dirname(await fn), "jupyter-lab");
+      results.push(jupyterLabPath);
+    }
+    return results;
+    // return condaExecs.map(function (fn: string) {
+    //   return path.resolve(path.dirname(fn), "jupyter-lab");
+    // }).filter(function (fn: string) {
+    //   return existsSync(fn);
+    // });
   }
 
 }

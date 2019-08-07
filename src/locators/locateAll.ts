@@ -10,22 +10,24 @@ import { CondaEnvFileLocator } from "./condaEnvFileLocator";
 import { PythonEnvironment } from "./environment";
 import { getUniqueStrings } from "./utils";
 
-export function locateAll () {
+export async function locateAll () {
   let execPaths = [];
 
-  let path = new PathLocator();
-  execPaths.push(...path.locateJupyterLabExecutables());
+  const path = new PathLocator();
+  execPaths.push(...(await path.locateJupyterLabExecutables()));
 
-  let conda = new CondaLocator();
-  execPaths.push(...conda.locateJupyterLabExecutables());
+  const conda = new CondaLocator();
+  execPaths.push(...(await conda.locateJupyterLabExecutables()));
 
-  let condaEnv = new CondaEnvLocator();
-  execPaths.push(...condaEnv.locateJupyterLabExecutables());
+  const condaEnv = new CondaEnvLocator();
+  execPaths.push(...(await condaEnv.locateJupyterLabExecutables()));
 
-  let condaEnvFile = new CondaEnvFileLocator();
-  execPaths.push(...condaEnvFile.locateJupyterLabExecutables());
+  const condaEnvFile = new CondaEnvFileLocator();
+  execPaths.push(...(await condaEnvFile.locateJupyterLabExecutables()));
 
-  let envInfo = getUniqueStrings(execPaths).map(value => (new PythonEnvironment(dirname(value))).getInfo());
-
-  return envInfo;
+  return await Promise.all(execPaths).then(async (paths) => {
+    return await Promise.all(getUniqueStrings(paths).map(value => {
+      return (new PythonEnvironment(dirname(value))).getInfo();
+    }));
+  });
 }

@@ -1,8 +1,7 @@
 "use strict";
 
 import * as path from "path";
-import { execSync, spawnSync } from "child_process";
-import { existsSync } from "fs";
+import { exec } from "child_process";
 
 export class PythonEnvironment {
 
@@ -12,39 +11,34 @@ export class PythonEnvironment {
     this.envPath = envPath;
   }
 
-  getPythonVersion () {
-    let command = path.resolve(this.envPath, "python");
-    if (!existsSync(command)) {
-      return null;
-    }
-    try {
-      let result = spawnSync(command, ["--version"]);
-      if (!result.stderr) {
-        return null;
-      }
-      return result.stderr.toString().trim();
-    } catch(err) {
-      return null;
-    }
+  async _getVersion (command: string) {
+    const fullCommand = path.resolve(this.envPath, command) + " --version";
+    return new Promise<{stdout: string, stderr: string}>((resolve, reject) => {
+      exec(fullCommand, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({stdout: stdout.toString().trim(), stderr: stderr.toString().trim()});
+        }
+      });
+    });
   }
 
-  getJupyterLabVersion () {
-    let command = path.resolve(this.envPath, "jupyter-lab");
-    if (!existsSync(command)) {
-      return null;
-    }
-    try {
-      return execSync(command + " --version").toString().trim();
-    } catch(err) {
-      return null;
-    }
+  async getPythonVersion () {
+    const result = await this._getVersion("python");
+    return result.stderr;
   }
 
-  getInfo () {
+  async getJupyterLabVersion () {
+    const result = await this._getVersion("jupyter-lab");
+    return result.stdout;
+  }
+
+  async getInfo () {
     return {
       path: this.envPath,
-      pythonVersion: this.getPythonVersion(),
-      jupyterLabVersion: this.getJupyterLabVersion()
+      pythonVersion: await this.getPythonVersion(),
+      jupyterLabVersion: await this.getJupyterLabVersion()
     }
   }
 

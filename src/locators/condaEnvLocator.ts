@@ -1,6 +1,6 @@
 "use strict";
 
-import { execSync } from "child_process";
+import { exec } from "child_process";
 import * as which from "which";
 import * as path from "path";
 import { existsSync } from "fs";
@@ -12,36 +12,44 @@ import { getUniqueStrings } from "./utils";
 // Locate conda environments by querying the 'conda' executables
 export class CondaEnvLocator extends Locator {
 
-  locateJupyterLabExecutables () {
+  async locateJupyterLabExecutables () {
     // Find the conda executables
-    let conda = new CondaLocator();
-    let condaPaths = conda.locateCondaExecutables();
+    const conda = new CondaLocator();
+    let condaPaths = await conda.locateCondaExecutables();
 
-    // Add in the conda from the path
-    try {
-      condaPaths.unshift(which.sync("conda"));
-    } catch (error) {}
-
-    // Remove duplicates
-    condaPaths = getUniqueStrings(condaPaths);
-
-    // Find the environments given by each conda executable
-    let envPaths = [].concat.apply([], condaPaths.map(function (file: string) {
-      try {
-        let info = execSync(file + " info --json");
-        let condaInfo = JSON.parse(info.toString());
-        if ("envs" in condaInfo) {
-          return condaInfo["envs"];
+    condaPaths.unshift(await new Promise<string>((resolve, reject) => {
+      which("conda", (err, path) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(path);
         }
-      } catch (error) {}
-      return [];
+      });
     }));
 
-    // Return that environments that have jupyer-lab installed
-    return envPaths.map(function (fn: string) {
-      return path.resolve(fn, "bin/jupyter-lab");
-    }).filter(function (fn: string) {
-      return existsSync(fn);
+    condaPaths = getUniqueStrings(condaPaths);
+
+    return Promise.all(condaPaths.map(value => {
+      return new Promise<string[]>((resolve, reject) => {
+        exec(value + " info --json", (error, stdout, stderr) => {
+          if (error) {
+            resolve([]);
+          } else {
+            const condaInfo = JSON.parse(stdout.toString());
+            if ("envs" in condaInfo) {
+              resolve(condaInfo["envs"]);
+            } else {
+              resolve([]);
+            }
+          }
+        });
+      });
+    })).then(list_of_lists => {
+      return [].concat.apply([], list_of_lists).map((fn: string) => {
+        return path.resolve(fn, "bin/jupyter-lab");
+      }).filter((fn: string) => {
+        return existsSync(fn);
+      });
     });
   }
 

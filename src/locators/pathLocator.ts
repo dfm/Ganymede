@@ -5,12 +5,16 @@ import { Locator } from "./locator";
 
 export class PathLocator extends Locator {
 
-  locateJupyterLabExecutables () {
-    try {
-      return [which.sync("jupyter-lab")];
-    } catch (error) {
-      return null;
-    }
+  async locateJupyterLabExecutables () {
+    return new Promise<string[]>((resolve, reject) => {
+      which("jupyter-lab", (error, path) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve([path]);
+        }
+      });
+    });
   }
 
 }
