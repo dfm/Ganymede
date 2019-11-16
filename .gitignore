@@ -4,3 +4,5 @@ node_modules
 .DS_Store
 app/*
 !app/pages
+env
+src/locators

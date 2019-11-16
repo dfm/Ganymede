@@ -1,11 +1,28 @@
 import { Workspace } from "./workspace";
 import { JupyterServer } from "./server";
+import * as fs from "fs";
+import { dirname, basename } from "path";
 
 export class WorkspaceManager {
   workspaces = [];
   activeWorkspace = null;
 
-  startNewWorkspace (directory=null, path=null) {
+  startNewWorkspace (path=null) {
+    let directory = null;
+    if (path != null) {
+      if (fs.existsSync(path)) {
+        if (fs.lstatSync(path).isDirectory()) {
+          directory = path;
+          path = null;
+        } else {
+          directory = dirname(path);
+          path = basename(path);
+        }
+      } else {
+        return;
+      }
+    }
+
     let self = this;
     let workspace = new Workspace();
     workspace.start(directory, path);

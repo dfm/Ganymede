@@ -32,13 +32,7 @@ app.on("ready", function () {
   if (args._.length) {
     args._.forEach(function (element) {
       let path = resolve(cwd, element);
-      if (fs.existsSync(path)) {
-        if (fs.lstatSync(path).isDirectory()) {
-          manager.startNewWorkspace(path, null);
-        } else {
-          manager.startNewWorkspace(dirname(path), basename(path));
-        }
-      }
+      manager.startNewWorkspace(path);
     });
   } else {
     manager.startNewWorkspace(loadDirectory, loadPath);
@@ -49,7 +43,7 @@ app.on("ready", function () {
 
 app.on("open-file", function (event, path) {
   if (app.isReady() && manager != null) {
-    manager.startNewWorkspace(dirname(path), basename(path));
+    manager.startNewWorkspace(path);
   } else {
     loadDirectory = dirname(path);
     loadPath = basename(path);
