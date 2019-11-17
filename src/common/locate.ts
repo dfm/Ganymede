@@ -2,7 +2,7 @@
 
 import * as glob from "glob";
 import * as which from "which";
-import * as logger from "electron-log";
+import logger from "electron-log";
 import * as path from "path";
 import { exec } from "child_process";
 import * as fs from "fs";
@@ -14,11 +14,13 @@ export class Locator { }
 
 // Find the default jupyter-lab instance in the PATH
 export class PathLocator extends Locator {
-  async getSearchPaths() {
-    return new Promise<string[]>((resolve, reject) => {
-      which("jupyter-lab", (error: any, filename: string) => {
-        if (error) {
-          logger.error(error);
+  async getSearchPaths(debug = false) {
+    return new Promise<string[]>(resolve => {
+      which("jupyter-lab", (error, filename) => {
+        if (error || !filename) {
+          if (debug) {
+            logger.error(error);
+          }
           resolve([]);
         } else {
           resolve([path.dirname(path.resolve(filename))]);
@@ -45,7 +47,7 @@ export class CondaLocator extends Locator {
     untildify('~/AppData/Local/Continuum/[Mm]iniconda*/Scripts/conda.exe'),
     untildify('~/AppData/Local/Continuum/[Aa]naconda*/Scripts/conda.exe')];
 
-  async getSearchPaths() {
+  async getSearchPaths(debug = false) {
     let globs = this.condaGlobPathsForLinuxMac;
     if (this.isWindows) {
       globs = this.condaGlobPathsForWindows;
@@ -55,7 +57,9 @@ export class CondaLocator extends Locator {
       const newPaths = new Promise<string[]>(resolve => {
         glob(g, (err: any, matches: string[]) => {
           if (err) {
-            logger.error(err);
+            if (debug) {
+              logger.error(err);
+            }
             resolve([]);
           } else {
             resolve(matches);
@@ -65,7 +69,7 @@ export class CondaLocator extends Locator {
       paths.push(newPaths);
     }
     return Promise.all(paths).then((values: string[][]) => {
-      return [].concat.apply([], values).map(
+      return ([] as string[]).concat.apply([], values).map(
         (filename: string) => path.dirname(path.resolve(filename)));
     });
   }
@@ -75,10 +79,10 @@ export class CondaLocator extends Locator {
 // found by the CondaLocator
 export class CondaEnvLocator extends Locator {
   isWindows: boolean = process.platform === "win32";
-  async getSearchPaths(condaSearchPaths?: Promise<string[]>) {
+  async getSearchPaths(condaSearchPaths?: Promise<string[]>, debug = false) {
     if (!condaSearchPaths) {
       const locator = new CondaLocator();
-      condaSearchPaths = locator.getSearchPaths();
+      condaSearchPaths = locator.getSearchPaths(debug);
     }
     let execName: string = "conda";
     if (this.isWindows) {
@@ -90,14 +94,18 @@ export class CondaEnvLocator extends Locator {
       envPaths.push(new Promise<string[]>((resolve) => {
         exec(condaPath + " info --json", (error, stdout) => {
           if (error) {
-            logger.error(error);
+            if (debug) {
+              logger.error(error);
+            }
             resolve([]);
           } else {
             const condaInfo = JSON.parse(stdout.toString());
             if (condaInfo.envs) {
               resolve(condaInfo.envs);
             } else {
-              logger.error("Couldn't parse info: " + condaInfo);
+              if (debug) {
+                logger.error("Couldn't parse info: " + condaInfo);
+              }
               resolve([]);
             }
           }
@@ -105,7 +113,7 @@ export class CondaEnvLocator extends Locator {
       }));
     }
     return Promise.all(envPaths).then((envPaths: string[][]) => {
-      return [].concat.apply([], envPaths).map(
+      return ([] as string[]).concat.apply([], envPaths).map(
         (filename: string) => path.resolve(filename, "bin"));
     });
   }
@@ -113,11 +121,13 @@ export class CondaEnvLocator extends Locator {
 
 export class CondaEnvFileLocator extends Locator {
   envFilePath = untildify("~/.conda/environments.txt");
-  async getSearchPaths() {
+  async getSearchPaths(debug = false) {
     return new Promise<string[]>(resolve => {
       fs.readFile(this.envFilePath, { encoding: "utf8" }, (error, data) => {
         if (error) {
-          logger.error(error);
+          if (debug) {
+            logger.error(error);
+          }
           resolve([]);
         } else {
           resolve(data.split(/[\r\n]+/).map(value => path.resolve(value, "bin")));
@@ -145,29 +155,35 @@ async function getEnvInfo(searchPath: string) {
   const jupyterLabPath = path.resolve(searchPath, "jupyter-lab");
   const jupyterLabVersion = getVersion(jupyterLabPath);
   const pythonVersion = getVersion(path.resolve(searchPath, "python"));
-  return Promise.all([jupyterLabPath, pythonVersion, jupyterLabVersion]).catch(() => null);
+  return Promise.all([jupyterLabPath, pythonVersion, jupyterLabVersion]).then((value) => {
+    return {
+      path: value[0],
+      pythonVersion: value[1],
+      jupyterLabVersion: value[2]
+    }
+  }).catch(() => null);
 }
 
 // Locate all the jupyter-lab executables
-async function locateAll() {
+export async function locateAll(debug = false) {
   const paths: Promise<string[]>[] = [];
 
   const pathLocator = new PathLocator();
-  paths.push(pathLocator.getSearchPaths());
+  paths.push(pathLocator.getSearchPaths(debug));
 
   const condaLocator = new CondaLocator();
-  const condaPaths = condaLocator.getSearchPaths();
+  const condaPaths = condaLocator.getSearchPaths(debug);
   paths.push(condaPaths);
 
   const condaEnvFileLocator = new CondaEnvFileLocator();
-  paths.push(condaEnvFileLocator.getSearchPaths());
+  paths.push(condaEnvFileLocator.getSearchPaths(debug));
 
   const condaEnvLocator = new CondaEnvLocator();
-  paths.push(condaEnvLocator.getSearchPaths(condaPaths));
+  paths.push(condaEnvLocator.getSearchPaths(condaPaths, debug));
 
   return Promise.all(paths).then(paths => {
     // Flatten and find unique environments
-    const array = [].concat.apply([], paths);
+    const array = ([] as string[]).concat.apply([], paths);
     return array.filter((element: string, index: number, array: string[]) => {
       return array.indexOf(element) === index;
     });
@@ -175,15 +191,5 @@ async function locateAll() {
     return Promise.all(searchPaths.map(getEnvInfo));
   }).then(info => {
     return info.filter((element: any) => element);
-  }).then(info => {
-    return info.map(value => {
-      return {
-        path: value[0],
-        pythonVersion: value[1],
-        jupyterLabVersion: value[2]
-      };
-    });
   });
 }
-
-locateAll().then(console.log)

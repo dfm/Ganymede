@@ -1,14 +1,5 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitAny": false,
-    "sourceMap": true,
-    "outDir": "app",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*"]
-    }
-  },
+  "extends": "./node_modules/electron-webpack/tsconfig-base.json",
   "include": [
     "src/**/*"
   ]
