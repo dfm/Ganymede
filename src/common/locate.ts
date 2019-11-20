@@ -1,14 +1,15 @@
 "use strict";
 
 import * as glob from "glob";
-import * as which from "which";
+import which from "which";
 import logger from "electron-log";
 import * as path from "path";
 import { exec } from "child_process";
 import * as fs from "fs";
+import { EnvInterface } from "./envInterface";
 
 // tslint:disable-next-line:no-require-imports no-var-requires
-const untildify: (value: string) => string = require("untildify");
+export const untildify: (value: string) => string = require("untildify");
 
 export class Locator { }
 
@@ -151,7 +152,7 @@ async function getVersion(executable: string) {
 }
 
 // Get the jupyter-lab and python versions for an environment
-async function getEnvInfo(searchPath: string) {
+async function getEnvInfo(searchPath: string): Promise<EnvInterface | null> {
   const jupyterLabPath = path.resolve(searchPath, "jupyter-lab");
   const jupyterLabVersion = getVersion(jupyterLabPath);
   const pythonVersion = getVersion(path.resolve(searchPath, "python"));
@@ -165,7 +166,7 @@ async function getEnvInfo(searchPath: string) {
 }
 
 // Locate all the jupyter-lab executables
-export async function locateAll(debug = false) {
+export async function locateAll(debug = false): Promise<EnvInterface[]> {
   const paths: Promise<string[]>[] = [];
 
   const pathLocator = new PathLocator();
@@ -181,15 +182,26 @@ export async function locateAll(debug = false) {
   const condaEnvLocator = new CondaEnvLocator();
   paths.push(condaEnvLocator.getSearchPaths(condaPaths, debug));
 
-  return Promise.all(paths).then(paths => {
-    // Flatten and find unique environments
+  const flattened = Promise.all(paths).then(paths => {
     const array = ([] as string[]).concat.apply([], paths);
     return array.filter((element: string, index: number, array: string[]) => {
       return array.indexOf(element) === index;
     });
-  }).then(searchPaths => {
+  });
+
+  const envInfo = flattened.then(searchPaths => {
     return Promise.all(searchPaths.map(getEnvInfo));
-  }).then(info => {
-    return info.filter((element: any) => element);
+  });
+
+  // Can't use a filter operation because TS can't work out that it'll
+  // never be null
+  return envInfo.then(envs => {
+    let finalEnvs: EnvInterface[] = [];
+    for (const env of envs) {
+      if (env) {
+        finalEnvs.push(env);
+      }
+    }
+    return finalEnvs;
   });
 }

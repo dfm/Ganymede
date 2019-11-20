@@ -42,9 +42,6 @@
         "deb"
       ]
     },
-    "files": [
-      "app/*.js"
-    ],
     "extraResources": [
       "ganymede.sh"
     ]
