@@ -2,13 +2,23 @@
   text-align: center;
 }
 
-.env {
-  font: caption;
-  padding: 10px 25px;
+.env-header {
+  padding: 40px 0 20px;
+  font-weight: bold;
+  font-size: 125%;
 }
 
-.env-path {
-  overflow: scroll;
+.env, .env-custom-path {
+  padding: 10px 25px;
+  cursor: auto;
+}
+
+.env:hover, .env-custom-path:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.env-path, .env-custom-path {
   text-overflow: ellipsis;
   white-space: nowrap;
 }

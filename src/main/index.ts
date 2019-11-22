@@ -1,13 +1,13 @@
 "use strict";
 
+import fs from "fs";
 import path from "path";
 import yargs from "yargs";
 import { app } from "electron";
 
 import * as menu from "./menu";
 import * as ganymede from "./ganymede";
-import { untildify } from "../common/untildify";
-import fs from "fs";
+import untildify from "../common/untildify";
 
 function processArgs(args: any) {
   const newPath = args["path-environment"];

@@ -5,7 +5,7 @@ import { format as formatUrl } from "url";
 import { BrowserWindow, dialog, ipcMain } from "electron";
 
 import { Workspace } from "./workspace";
-import { untildify } from "../common/untildify";
+import untildify from "../common/untildify";
 import { EnvInterface } from "../common/envInterface";
 
 const isDevelopment = process.env.NODE_ENV !== "production";

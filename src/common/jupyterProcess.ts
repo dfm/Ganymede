@@ -1,16 +1,19 @@
 "use strict";
 
-import logger from "electron-log";
-import { exec, ChildProcess } from "child_process";
-import { writeFile, mkdir, unlink } from "fs";
 import * as path from "path";
+import { app } from "electron";
+import logger from "electron-log";
+import { writeFile, mkdir, unlink } from "fs";
+import { exec, ChildProcess } from "child_process";
+
+const logDirectory = path.join(app.getPath("userData"), "logs");
 
 export class JupyterProcess {
   process: ChildProcess;
   logFile: string;
   stopped: boolean = false;
 
-  constructor(execPath: string, cwd: string, logDirectory: string, callback?: (error: any, url: string | null) => void) {
+  constructor(execPath: string, cwd: string, callback?: (error: any, url: string | null) => void) {
     const self = this;
 
     const command = execPath + " --no-browser -y"

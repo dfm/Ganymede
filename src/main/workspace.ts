@@ -3,7 +3,6 @@
 import logger from "electron-log";
 import { BrowserWindow } from "electron";
 
-import { untildify } from "../common/untildify";
 import { JupyterProcess } from "../common/jupyterProcess";
 
 export class Workspace {
@@ -19,7 +18,7 @@ export class Workspace {
 
   start(path: string) {
     this.stop();
-    this.server = new JupyterProcess(path, this.cwd, untildify("~/.ganymede/logs"), (error, url) => {
+    this.server = new JupyterProcess(path, this.cwd, (error, url) => {
       if (error) {
         logger.error(`ERROR: ${error}`);
       } else if (url) {

@@ -1,4 +1,12 @@
 "use strict";
 
-// tslint:disable-next-line:no-require-imports no-var-requires
-export const untildify: (value: string) => string = require("untildify");
+import os from "os";
+
+export const homeDirectory = os.homedir();
+
+export default function unfildify(pathWithTilde: string) {
+  if (homeDirectory) {
+    return pathWithTilde.replace(/^~(?=$|\/|\\)/, homeDirectory);
+  }
+  return pathWithTilde;
+}

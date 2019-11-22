@@ -1,18 +1,27 @@
 "use strict";
 
-import * as glob from "glob";
+import fs from "fs";
+import glob from "glob";
+import path from "path";
 import which from "which";
 import logger from "electron-log";
-import * as path from "path";
 import { exec } from "child_process";
-import * as fs from "fs";
-import { EnvInterface } from "./envInterface";
-import { untildify } from "./untildify";
 
-export class Locator { }
+import settings from "./settings";
+import untildify from "./untildify";
+import { EnvInterface } from "./envInterface";
+
+class Locator { }
+
+class KnownPathLocator extends Locator {
+  async getSearchPaths(debug = false) {
+    const paths: string[] = settings.get("settings", [] as string[]);
+    return paths;
+  }
+}
 
 // Find the default jupyter-lab instance in the PATH
-export class PathLocator extends Locator {
+class PathLocator extends Locator {
   async getSearchPaths(debug = false) {
     return new Promise<string[]>(resolve => {
       which("jupyter-lab", (error, filename) => {
@@ -32,7 +41,7 @@ export class PathLocator extends Locator {
 // Find conda instances in known paths
 // Ref: https://github.com/microsoft/vscode-python/blob/master/
 //                 src/client/interpreter/locators/services/condaService.ts
-export class CondaLocator extends Locator {
+class CondaLocator extends Locator {
   isWindows: boolean = process.platform === "win32";
   condaGlobPathsForLinuxMac: string[] = [
     '/opt/*conda*/bin/conda',
@@ -76,7 +85,7 @@ export class CondaLocator extends Locator {
 
 // Find conda environments that are known by each conda instance
 // found by the CondaLocator
-export class CondaEnvLocator extends Locator {
+class CondaEnvLocator extends Locator {
   isWindows: boolean = process.platform === "win32";
   async getSearchPaths(condaSearchPaths?: Promise<string[]>, debug = false) {
     if (!condaSearchPaths) {
@@ -118,7 +127,7 @@ export class CondaEnvLocator extends Locator {
   }
 }
 
-export class CondaEnvFileLocator extends Locator {
+class CondaEnvFileLocator extends Locator {
   envFilePath = untildify("~/.conda/environments.txt");
   async getSearchPaths(debug = false) {
     return new Promise<string[]>(resolve => {
@@ -169,6 +178,9 @@ export async function locateAll(debug = false): Promise<EnvInterface[]> {
 
   const pathLocator = new PathLocator();
   paths.push(pathLocator.getSearchPaths(debug));
+
+  const knownPathLocator = new KnownPathLocator();
+  paths.push(knownPathLocator.getSearchPaths(debug));
 
   const condaLocator = new CondaLocator();
   const condaPaths = condaLocator.getSearchPaths(debug);

@@ -1,4 +1,5 @@
 #app, html, body {
+  font: caption;
   height: 100%;
   margin: 0;
 }

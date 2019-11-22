@@ -1,5 +1,8 @@
+"use strict";
+
 import "./envList.css"
 import React from "react";
+import { remote } from "electron";
 import { EnvInterface } from "../../common/envInterface";
 
 interface EnvProps {
@@ -31,6 +34,24 @@ export class EnvList extends React.Component<EnvListProps, {}> {
     const envs = this.props.envs.map((env: EnvInterface, index) => {
       return <Env key={index} env={env} onClick={self.props.onClick} />;
     });
-    return <div className="env-list">{envs}</div>
+    return (
+      <div className="env-list">
+        <div className="env-header">Choose a jupyter-lab instance:</div>
+        {envs}
+        <div className="env-custom-path" onClick={() => {
+          const jupyterPaths = remote.dialog.showOpenDialogSync({
+            title: "Choose a jupyter-lab instance",
+            message: "Choose a jupyter-lab instance",
+          });
+          if (jupyterPaths && jupyterPaths.length) {
+            self.props.onClick({
+              path: jupyterPaths[0],
+              pythonVersion: "custom",
+              jupyterLabVersion: "custom"
+            });
+          }
+        }}>or choose a custom instance.</div>
+      </div>
+    )
   }
 }

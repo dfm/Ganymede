@@ -1,3 +1,5 @@
+"use strict";
+
 import { Menu } from "electron";
 import fs from "fs";
 import path from "path";
