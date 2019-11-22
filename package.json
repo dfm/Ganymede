@@ -46,6 +46,9 @@
       "ganymede.sh"
     ]
   },
+  "resolutions": {
+    "js-yaml": "^3.13.1"
+  },
   "dependencies": {
     "electron-log": "^3.0.9",
     "electron-store": "^5.1.0",
