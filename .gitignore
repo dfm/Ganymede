@@ -6,3 +6,4 @@ app/*
 !app/pages
 env
 src/locators
+yarn.lock
