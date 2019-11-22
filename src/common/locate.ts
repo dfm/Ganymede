@@ -7,9 +7,7 @@ import * as path from "path";
 import { exec } from "child_process";
 import * as fs from "fs";
 import { EnvInterface } from "./envInterface";
-
-// tslint:disable-next-line:no-require-imports no-var-requires
-export const untildify: (value: string) => string = require("untildify");
+import { untildify } from "./untildify";
 
 export class Locator { }
 

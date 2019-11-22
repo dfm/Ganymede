@@ -22,12 +22,19 @@ class App extends React.Component<{}, AppState> {
 
   constructor(props: any) {
     super(props);
-    this.index = -1;
     this.state = {
       working: true,
       envs: ([] as EnvInterface[])
     };
     this.showEnvs = this.showEnvs.bind(this);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const newIndex = urlParams.get("index");
+    if (!newIndex) {
+      this.index = -1;
+    } else {
+      this.index = parseInt(newIndex);
+    }
   }
 
   render() {
@@ -50,12 +57,9 @@ class App extends React.Component<{}, AppState> {
   componentDidMount() {
     const self = this;
     ipcRenderer.on("show-envs", this.showEnvs);
-    ipcRenderer.once("set-index", (event, newIndex: number) => {
-      self.index = newIndex;
-      locateAll().then((envs) => {
-        ipcRenderer.send("cache-envs", envs);
-        self.showEnvs(null, envs);
-      });
+    locateAll().then((envs) => {
+      ipcRenderer.send("cache-envs", envs);
+      self.showEnvs(null, envs);
     });
   }
 

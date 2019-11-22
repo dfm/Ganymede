@@ -1,0 +1,25 @@
+.env-list {
+  text-align: center;
+}
+
+.env {
+  font: caption;
+  padding: 10px 25px;
+}
+
+.env-path {
+  overflow: scroll;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.env-python, .env-jupyter {
+  font-size: 75%;
+  color: #888;
+  display: inline-block;
+}
+
+.env-python::after {
+  content: "/";
+  padding: 0 5px;
+}

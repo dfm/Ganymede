@@ -1,3 +1,4 @@
+import "./envList.css"
 import React from "react";
 import { EnvInterface } from "../../common/envInterface";
 
@@ -10,7 +11,11 @@ class Env extends React.Component<EnvProps, {}> {
   render() {
     const env = this.props.env;
     return (
-      <div onClick={() => this.props.onClick(env)}>{env.path}</div>
+      <div className="env" onClick={() => this.props.onClick(env)}>
+        <div className="env-path">{env.path}</div>
+        <div className="env-python">{env.pythonVersion}</div>
+        <div className="env-jupyter">JupyterLab {env.jupyterLabVersion}</div>
+      </div>
     );
   }
 }
@@ -23,8 +28,9 @@ interface EnvListProps {
 export class EnvList extends React.Component<EnvListProps, {}> {
   render() {
     const self = this;
-    return this.props.envs.map((env: EnvInterface, index) => {
+    const envs = this.props.envs.map((env: EnvInterface, index) => {
       return <Env key={index} env={env} onClick={self.props.onClick} />;
     });
+    return <div className="env-list">{envs}</div>
   }
 }
