@@ -1,7 +1,7 @@
 {
   "name": "ganymede",
   "description": "Run Jupyter Lab as a native app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "app/index.js",
   "repository": "dfm/Ganymede",
   "author": "Dan Foreman-Mackey",

@@ -25,7 +25,6 @@ export function createWindow(cwd?: string) {
       nodeIntegration: true
     }
   });
-  console.log(`window.id: ${window.id}`);
 
   if (!cwd) {
     let newCwds = dialog.showOpenDialogSync(
@@ -119,7 +118,6 @@ export function quit() {
 }
 
 ipcMain.on("launch-server", (event, index, env: EnvInterface) => {
-  console.log(index, env);
   const workspace = workspaces[index];
   if (workspace) {
     workspace.start(env.path);

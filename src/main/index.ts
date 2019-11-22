@@ -10,7 +10,6 @@ import { untildify } from "../common/untildify";
 import fs from "fs";
 
 function processArgs(args: any) {
-  console.log("args:", args)
   const newPath = args["path-environment"];
   if (newPath) {
     process.env.PATH = newPath as string;
@@ -21,7 +20,6 @@ function processArgs(args: any) {
   if (execFrom) {
     cwd = execFrom as string;
   }
-  console.log(cwd);
 
   if (args._.length) {
     args._.forEach((element: string) => {
@@ -60,8 +58,6 @@ if (!lock) {
 
   app.on("ready", () => {
     menu.setup(ganymede.createWindow);
-
-    console.log("argv: ", process.argv)
     let args = yargs.parse(process.argv.slice(1));
     if (!app.isPackaged) {
       args = yargs.parse(process.argv.slice(3));

@@ -25,7 +25,7 @@ The code has been developed and tested on macOS and it should probably work on a
 
 1. Clone the repository: `git clone https://github.com/dfm/Ganymede.git; cd Ganymede`
 2. Install the dependencies: `yarn`
-3. Start the dev version of the app: `yarn start`
+3. Start the dev version of the app: `yarn dev`
 4. Build the production version of the app: `yarn dist`
 5. Launch the app from the `dist` directory
 
@@ -33,7 +33,7 @@ If you're on a Mac, you should be able to open `.ipynb` files in Ganymede by dou
 
 ## Troubleshooting
 
-**PATH/environment issues**: It's generally still easiest to launch Ganymede using the command line so that you get your standard environment. To do this, launch the app as usual and then select "Install CLI" from the file menu. This will install a script in `/usr/local/bin` so that you can run `ganymede /path/to/a/directory/or/notebook.ipynb` to open the app in that directory. This only works on macOS so far!
+**PATH/environment issues**: It's generally still easiest to launch Ganymede using the command line so that you get your standard environment. To do this, launch the app as usual and then select "Install CLI" from the file menu. This will install a script in `/usr/local/bin` so that you can run `ganymede /path/to/a/directory` to open the app in that directory. This only works on macOS so far!
 
 ## License
 
