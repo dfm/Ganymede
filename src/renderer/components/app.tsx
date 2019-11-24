@@ -57,6 +57,9 @@ class App extends React.Component<{}, AppState> {
   componentDidMount() {
     const self = this;
     ipcRenderer.on("show-envs", this.showEnvs);
+    ipcRenderer.on("stop-working", () => {
+      self.setState({ working: false });
+    });
     locateAll().then((envs) => {
       ipcRenderer.send("cache-envs", envs);
       self.showEnvs(null, envs);

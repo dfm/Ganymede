@@ -1,7 +1,6 @@
 "use strict";
 
-import logger from "electron-log";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, dialog } from "electron";
 
 import { JupyterProcess } from "../common/jupyterProcess";
 
@@ -17,10 +16,16 @@ export class Workspace {
   }
 
   start(path: string) {
+    const self = this;
     this.stop();
     this.server = new JupyterProcess(path, this.cwd, (error, url) => {
       if (error) {
-        logger.error(`ERROR: ${error}`);
+        dialog.showMessageBox({
+          type: "error",
+          message: `Failed to launch jupyter-lab at path:\n\n${path}\n\nWith error:\n\n${error}`,
+          buttons: ["OK"]
+        });
+        self.window.webContents.send("stop-working");
       } else if (url) {
         this.window.loadURL(url);
       }

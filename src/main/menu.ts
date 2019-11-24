@@ -1,9 +1,8 @@
 "use strict";
 
-import { Menu } from "electron";
+import { Menu, dialog } from "electron";
 import fs from "fs";
 import path from "path";
-import logger from "electron-log";
 
 const isMac = process.platform === "darwin";
 
@@ -43,8 +42,11 @@ function installCLI() {
   fs.unlink(target_path, function () {
     fs.symlink(script_path, target_path, function (error) {
       if (error != null) {
-        logger.error("Failed to install cli");
-        logger.error(error);
+        dialog.showMessageBox({
+          type: "error",
+          message: `Failed to install CLI:\n\n${error}`,
+          buttons: ["OK"]
+        });
       }
     });
   });
