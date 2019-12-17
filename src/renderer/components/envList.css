@@ -1,9 +1,9 @@
 .env-list {
-  text-align: center;
+  text-align: left;
 }
 
 .env-header {
-  padding: 40px 0 20px;
+  padding: 40px 25px 20px;
   font-weight: bold;
   font-size: 125%;
 }

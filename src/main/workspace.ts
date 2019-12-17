@@ -8,11 +8,13 @@ export class Workspace {
   cwd: string;
   window: BrowserWindow;
   server: JupyterProcess | null;
+  path: string | undefined;
 
-  constructor(cwd: string, window: BrowserWindow) {
+  constructor(cwd: string, window: BrowserWindow, path?: string) {
     this.cwd = cwd;
     this.window = window;
     this.server = null;
+    this.path = path;
   }
 
   start(path: string) {
@@ -27,6 +29,10 @@ export class Workspace {
         });
         self.window.webContents.send("stop-working");
       } else if (url) {
+        let fullUrl = new URL(url);
+        if (self.path) {
+          fullUrl.pathname += "lab/tree/" + self.path;
+        }
         this.window.loadURL(url);
       }
     });

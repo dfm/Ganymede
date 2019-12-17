@@ -27,6 +27,7 @@ class App extends React.Component<{}, AppState> {
       envs: ([] as EnvInterface[])
     };
     this.showEnvs = this.showEnvs.bind(this);
+    this.locateEnvs = this.locateEnvs.bind(this);
 
     const urlParams = new URLSearchParams(window.location.search);
     const newIndex = urlParams.get("index");
@@ -42,32 +43,44 @@ class App extends React.Component<{}, AppState> {
       return <Spinner />;
     }
     const self = this;
-    return <EnvList
-      envs={this.state.envs}
-      onClick={(env: EnvInterface) => {
-        ipcRenderer.send("launch-server", self.index, env);
-        self.setState({ working: true });
-      }} />;
+    return (
+      <div>
+        <div className="refresh" onClick={() => self.locateEnvs()}>Refresh</div>
+        <EnvList
+          envs={this.state.envs}
+          onClick={(env: EnvInterface) => {
+            ipcRenderer.send("launch-server", self.index, env);
+            self.setState({ working: true });
+          }} />
+      </div >
+    );
   }
 
   showEnvs(event: any, envs: EnvInterface[]) {
     this.setState({ working: false, envs: envs });
   }
 
-  componentDidMount() {
+  locateEnvs(event?: any) {
     const self = this;
-    ipcRenderer.on("show-envs", this.showEnvs);
-    ipcRenderer.on("stop-working", () => {
-      self.setState({ working: false });
-    });
+    this.setState({ working: true });
     locateAll().then((envs) => {
       ipcRenderer.send("cache-envs", envs);
       self.showEnvs(null, envs);
     });
   }
 
+  componentDidMount() {
+    const self = this;
+    ipcRenderer.on("show-envs", this.showEnvs);
+    ipcRenderer.on("locate-envs", this.locateEnvs);
+    ipcRenderer.on("stop-working", () => {
+      self.setState({ working: false });
+    });
+  }
+
   componentWillUnmount() {
     ipcRenderer.removeListener("show-envs", this.showEnvs);
+    ipcRenderer.removeListener("locate-envs", this.locateEnvs);
   }
 }
 

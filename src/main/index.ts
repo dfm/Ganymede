@@ -1,6 +1,5 @@
 "use strict";
 
-import fs from "fs";
 import path from "path";
 import yargs from "yargs";
 import { app } from "electron";
@@ -8,6 +7,8 @@ import { app } from "electron";
 import * as menu from "./menu";
 import * as ganymede from "./ganymede";
 import untildify from "../common/untildify";
+
+let openFilePath: string | null = null;
 
 function processArgs(args: any) {
   const newPath = args["path-environment"];
@@ -23,13 +24,14 @@ function processArgs(args: any) {
 
   if (args._.length) {
     args._.forEach((element: string) => {
-      const filePath = path.resolve(cwd, element);
-      if (fs.lstatSync(filePath).isDirectory()) {
-        ganymede.createWindow(filePath);
-      } else {
-        ganymede.createWindow(path.basename(filePath));
+      let filePath = element;
+      if (execFrom) {
+        filePath = path.resolve(cwd, element);
       }
+      ganymede.createWindow(filePath);
     });
+  } else if (openFilePath) {
+    ganymede.createWindow(openFilePath);
   } else {
     ganymede.createWindow(cwd);
   }
@@ -49,11 +51,7 @@ if (!lock) {
   });
 
   app.on("open-file", (event, filePath) => {
-    if (fs.lstatSync(filePath).isDirectory()) {
-      ganymede.createWindow(filePath);
-    } else {
-      ganymede.createWindow(path.basename(filePath));
-    }
+    openFilePath = filePath;
   });
 
   app.on("ready", () => {
@@ -62,7 +60,6 @@ if (!lock) {
     if (!app.isPackaged) {
       args = yargs.parse(process.argv.slice(3));
     }
-
     processArgs(args);
   });
 

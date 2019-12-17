@@ -1,5 +1,6 @@
 "use strict";
 
+import os from "os";
 import fs from "fs";
 import glob from "glob";
 import path from "path";
@@ -10,6 +11,8 @@ import { exec } from "child_process";
 import settings from "./settings";
 import untildify from "./untildify";
 import { EnvInterface } from "./envInterface";
+
+const homedir = `${os.homedir()}/`;
 
 class Locator { }
 
@@ -158,6 +161,13 @@ async function getVersion(executable: string) {
   });
 }
 
+function tildify(pathname: string): string {
+  if (pathname.startsWith(homedir)) {
+    return pathname.replace(homedir, "~/");
+  }
+  return pathname;
+}
+
 // Get the jupyter-lab and python versions for an environment
 async function getEnvInfo(searchPath: string): Promise<EnvInterface | null> {
   const jupyterLabPath = path.resolve(searchPath, "jupyter-lab");
@@ -165,7 +175,7 @@ async function getEnvInfo(searchPath: string): Promise<EnvInterface | null> {
   const pythonVersion = getVersion(path.resolve(searchPath, "python"));
   return Promise.all([jupyterLabPath, pythonVersion, jupyterLabVersion]).then((value) => {
     return {
-      path: value[0],
+      path: tildify(value[0]),
       pythonVersion: value[1],
       jupyterLabVersion: value[2]
     }

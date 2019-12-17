@@ -1,6 +1,7 @@
 "use strict";
 
-import * as path from "path";
+import fs from "fs";
+import path from "path";
 import { format as formatUrl } from "url";
 import { BrowserWindow, dialog, ipcMain } from "electron";
 
@@ -14,7 +15,7 @@ let envCache: EnvInterface[];
 
 export function createWindowIfNone(cwd?: string) {
   if (!Object.keys(workspaces).length) {
-    createWindow();
+    createWindow(cwd);
   }
 }
 
@@ -41,9 +42,14 @@ export function createWindow(cwd?: string) {
       cwd = newCwds[0];
     }
   }
-  window.setTitle(`Ganymede: ${cwd}`);
 
-  const workspace = new Workspace(cwd, window);
+  let filePath: string | undefined = undefined;
+  if (!fs.lstatSync(cwd).isDirectory()) {
+    filePath = path.basename(cwd);
+    cwd = path.dirname(cwd);
+  }
+  window.setTitle(`Ganymede: ${cwd}`);
+  const workspace = new Workspace(cwd, window, filePath);
 
   // Save the window with a unique id
   let index = window.id;
@@ -80,7 +86,7 @@ export function createWindow(cwd?: string) {
     if (envCache) {
       window.webContents.send("show-envs", envCache);
     } else {
-      window.webContents.send("set-index", index);
+      window.webContents.send("locate-envs");
     }
   });
 
